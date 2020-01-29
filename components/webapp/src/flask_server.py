@@ -31,6 +31,10 @@ model_version = os.getenv('MODEL_VERSION', '-1')
 # handle requests to the server
 @app.route("/")
 def main():
+  # name_arg = request.args.get("name", name_arg)
+  # addr_arg = request.args.get("addr", addr_arg)
+  # port_arg = request.args.get("port", port_arg)
+  # model_version = request.args.get("version", model_version)
   args = {"name": name_arg, "addr": addr_arg, "port": port_arg, "version": str(model_version)}
   logging.info("Request args: %s", args)
 
