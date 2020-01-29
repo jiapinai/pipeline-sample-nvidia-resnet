@@ -1,0 +1,363 @@
+"apiVersion": |-
+  argoproj.io/v1alpha1
+"kind": |-
+  Workflow
+"metadata":
+  "annotations":
+    "pipelines.kubeflow.org/pipeline_spec": |-
+      {"description": "Demonstrate an end-to-end training & serving pipeline using ResNet and CIFAR-10", "inputs": [{"default": "/mnt/workspace/raw_data", "name": "raw_data_dir", "optional": true}, {"default": "/mnt/workspace/processed_data", "name": "processed_data_dir", "optional": true}, {"default": "/mnt/workspace/saved_model", "name": "model_dir", "optional": true}, {"default": "50", "name": "epochs", "optional": true}, {"default": "trtis", "name": "trtserver_name", "optional": true}, {"default": "resnet_graphdef", "name": "model_name", "optional": true}, {"default": "1", "name": "model_version", "optional": true}, {"default": "webapp", "name": "webapp_prefix", "optional": true}, {"default": "80", "name": "webapp_port", "optional": true}], "name": "resnet_cifar10_pipeline"}
+  "generateName": |-
+    resnet-cifar10-pipeline-
+"spec":
+  "arguments":
+    "parameters":
+    - "name": |-
+        raw_data_dir
+      "value": |-
+        /mnt/workspace/raw_data
+    - "name": |-
+        processed_data_dir
+      "value": |-
+        /mnt/workspace/processed_data
+    - "name": |-
+        model_dir
+      "value": |-
+        /mnt/workspace/saved_model
+    - "name": |-
+        epochs
+      "value": |-
+        50
+    - "name": |-
+        trtserver_name
+      "value": |-
+        trtis
+    - "name": |-
+        model_name
+      "value": |-
+        resnet_graphdef
+    - "name": |-
+        model_version
+      "value": |-
+        1
+    - "name": |-
+        webapp_prefix
+      "value": |-
+        webapp
+    - "name": |-
+        webapp_port
+      "value": |-
+        80
+  "entrypoint": |-
+    resnet-cifar10-pipeline
+  "serviceAccountName": |-
+    pipeline-runner
+  "templates":
+  - "container":
+      "args":
+      - |-
+        --trtserver_name
+      - |-
+        {{inputs.parameters.trtserver_name}}
+      - |-
+        --model_path
+      - |-
+        {{inputs.parameters.train-output}}
+      "image": |-
+        registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-inference_server_launcher
+      "volumeMounts":
+      - "mountPath": |-
+          /mnt/workspace
+        "name": |-
+          nvidia-workspace-read-claim
+    "inputs":
+      "parameters":
+      - "name": |-
+          train-output
+      - "name": |-
+          trtserver_name
+    "name": |-
+      deploy-inference-server
+    "outputs":
+      "artifacts":
+      - "name": |-
+          deploy-inference-server-output
+        "path": |-
+          /output.txt
+      "parameters":
+      - "name": |-
+          deploy-inference-server-output
+        "valueFrom":
+          "path": |-
+            /output.txt
+    "volumes":
+    - "persistentVolumeClaim":
+        "claimName": nvidia-workspace-read-claim
+      "name": |-
+        nvidia-workspace-read-claim
+  - "container":
+      "args":
+      - |-
+        --workflow_name
+      - |-
+        {{workflow.name}}
+      - |-
+        --trtserver_name
+      - |-
+        {{inputs.parameters.deploy-inference-server-output}}
+      - |-
+        --model_name
+      - |-
+        {{inputs.parameters.model_name}}
+      - |-
+        --model_version
+      - |-
+        {{inputs.parameters.model_version}}
+      - |-
+        --webapp_prefix
+      - |-
+        {{inputs.parameters.webapp_prefix}}
+      - |-
+        --webapp_port
+      - |-
+        {{inputs.parameters.webapp_port}}
+      "image": |-
+        registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-components-webapp_launcher
+      "volumeMounts":
+      - "mountPath": |-
+          /mnt/workspace
+        "name": |-
+          nvidia-workspace-read-claim
+    "inputs":
+      "parameters":
+      - "name": |-
+          deploy-inference-server-output
+      - "name": |-
+          model_name
+      - "name": |-
+          model_version
+      - "name": |-
+          webapp_port
+      - "name": |-
+          webapp_prefix
+    "name": |-
+      deploy-webapp
+    "volumes":
+    - "persistentVolumeClaim":
+        "claimName": nvidia-workspace-read-claim
+      "name": |-
+        nvidia-workspace-read-claim
+  - "container":
+      "args":
+      - |-
+        --input_dir
+      - |-
+        {{inputs.parameters.raw_data_dir}}
+      - |-
+        --output_dir
+      - |-
+        {{inputs.parameters.processed_data_dir}}
+      "image": |-
+        registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-components-preprocess
+      "volumeMounts":
+      - "mountPath": |-
+          /mnt/workspace
+        "name": |-
+          nvidia-workspace-read-claim
+    "inputs":
+      "parameters":
+      - "name": |-
+          processed_data_dir
+      - "name": |-
+          raw_data_dir
+    "name": |-
+      preprocess
+    "outputs":
+      "artifacts":
+      - "name": |-
+          preprocess-output
+        "path": |-
+          /output.txt
+      "parameters":
+      - "name": |-
+          preprocess-output
+        "valueFrom":
+          "path": |-
+            /output.txt
+    "volumes":
+    - "persistentVolumeClaim":
+        "claimName": nvidia-workspace-read-claim
+      "name": |-
+        nvidia-workspace-read-claim
+  - "dag":
+      "tasks":
+      - "arguments":
+          "parameters":
+          - "name": |-
+              train-output
+            "value": |-
+              {{tasks.train.outputs.parameters.train-output}}
+          - "name": |-
+              trtserver_name
+            "value": |-
+              {{inputs.parameters.trtserver_name}}
+        "dependencies":
+        - |-
+          train
+        "name": |-
+          deploy-inference-server
+        "template": |-
+          deploy-inference-server
+      - "arguments":
+          "parameters":
+          - "name": |-
+              deploy-inference-server-output
+            "value": |-
+              {{tasks.deploy-inference-server.outputs.parameters.deploy-inference-server-output}}
+          - "name": |-
+              model_name
+            "value": |-
+              {{inputs.parameters.model_name}}
+          - "name": |-
+              model_version
+            "value": |-
+              {{inputs.parameters.model_version}}
+          - "name": |-
+              webapp_port
+            "value": |-
+              {{inputs.parameters.webapp_port}}
+          - "name": |-
+              webapp_prefix
+            "value": |-
+              {{inputs.parameters.webapp_prefix}}
+        "dependencies":
+        - |-
+          deploy-inference-server
+        "name": |-
+          deploy-webapp
+        "template": |-
+          deploy-webapp
+      - "arguments":
+          "parameters":
+          - "name": |-
+              processed_data_dir
+            "value": |-
+              {{inputs.parameters.processed_data_dir}}
+          - "name": |-
+              raw_data_dir
+            "value": |-
+              {{inputs.parameters.raw_data_dir}}
+        "name": |-
+          preprocess
+        "template": |-
+          preprocess
+      - "arguments":
+          "parameters":
+          - "name": |-
+              epochs
+            "value": |-
+              {{inputs.parameters.epochs}}
+          - "name": |-
+              model_dir
+            "value": |-
+              {{inputs.parameters.model_dir}}
+          - "name": |-
+              model_name
+            "value": |-
+              {{inputs.parameters.model_name}}
+          - "name": |-
+              model_version
+            "value": |-
+              {{inputs.parameters.model_version}}
+          - "name": |-
+              preprocess-output
+            "value": |-
+              {{tasks.preprocess.outputs.parameters.preprocess-output}}
+        "dependencies":
+        - |-
+          preprocess
+        "name": |-
+          train
+        "template": |-
+          train
+    "inputs":
+      "parameters":
+      - "name": |-
+          epochs
+      - "name": |-
+          model_dir
+      - "name": |-
+          model_name
+      - "name": |-
+          model_version
+      - "name": |-
+          processed_data_dir
+      - "name": |-
+          raw_data_dir
+      - "name": |-
+          trtserver_name
+      - "name": |-
+          webapp_port
+      - "name": |-
+          webapp_prefix
+    "name": |-
+      resnet-cifar10-pipeline
+  - "container":
+      "args":
+      - |-
+        --input_dir
+      - |-
+        {{inputs.parameters.preprocess-output}}
+      - |-
+        --output_dir
+      - |-
+        {{inputs.parameters.model_dir}}
+      - |-
+        --model_name
+      - |-
+        {{inputs.parameters.model_name}}
+      - |-
+        --model_version
+      - |-
+        {{inputs.parameters.model_version}}
+      - |-
+        --epochs
+      - |-
+        {{inputs.parameters.epochs}}
+      "image": |-
+        registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-components-train
+      "volumeMounts":
+      - "mountPath": |-
+          /mnt/workspace
+        "name": |-
+          nvidia-workspace-read-claim
+    "inputs":
+      "parameters":
+      - "name": |-
+          epochs
+      - "name": |-
+          model_dir
+      - "name": |-
+          model_name
+      - "name": |-
+          model_version
+      - "name": |-
+          preprocess-output
+    "name": |-
+      train
+    "outputs":
+      "artifacts":
+      - "name": |-
+          train-output
+        "path": |-
+          /output.txt
+      "parameters":
+      - "name": |-
+          train-output
+        "valueFrom":
+          "path": |-
+            /output.txt
+    "volumes":
+    - "persistentVolumeClaim":
+        "claimName": nvidia-workspace-read-claim
+      "name": |-
+        nvidia-workspace-read-claim
