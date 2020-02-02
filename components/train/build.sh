@@ -15,5 +15,5 @@
 
 IMAGE=registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-components-train
 
-docker build -t $IMAGE .
+docker build -t $IMAGE . && \
 docker push $IMAGE

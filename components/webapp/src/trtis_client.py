@@ -16,7 +16,7 @@ limitations under the License.
 '''
 
 from __future__ import print_function
-
+import logging
 import numpy as np
 import os
 import random
@@ -263,6 +263,7 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   channel = grpc.insecure_channel(server_host + ':' + str(server_port))
   grpc_stub = grpc_service_pb2_grpc.GRPCServiceStub(channel)
 
+  # https://docs.nvidia.com/deeplearning/sdk/tensorrt-inference-server-guide/docs/http_grpc_api.html#section-api-status
   # Prepare request for Status gRPC
   request = grpc_service_pb2.StatusRequest(model_name=model_name)
   # Call and receive response from Status gRPC
@@ -273,6 +274,10 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   verbose = False
   input_name, output_name, c, h, w, format, dtype = parse_model(
     response, model_name, batch_size, verbose)
+  logging.info("Got status for model %s:", model_name)
+  status_full = "input_name=%s, output_name=%s, c=%s, h=%s, w=%s, format=%s, dtype=%s " % model_name, input_name, output_name, c, h, w, format, dtype
+  logging.info(status_full)
+
 
   filledRequestGenerator = partial(requestGenerator, input_name, output_name, c, h, w, format, dtype, model_name,
                                    model_version, image_filename)
@@ -293,6 +298,7 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
     responses.append(request.result())
 
   idx = 0
+  logging.info('responses size: %d', len(responses))
   for response in responses:
     print("Request {}, batch size {}".format(idx, batch_size))
     label, score = postprocess(response.meta_data.output, result_filenames[idx], batch_size)

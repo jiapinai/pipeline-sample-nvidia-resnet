@@ -22,5 +22,5 @@ IMAGE=registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-components-web
 #rm -rf $base
 
 # Build & push webapp image
-docker build -t $IMAGE .
+docker build -t $IMAGE . && \
 docker push $IMAGE

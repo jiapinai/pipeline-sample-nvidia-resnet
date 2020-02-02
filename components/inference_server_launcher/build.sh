@@ -15,5 +15,5 @@
 
 IMAGE=registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvidia-resnet-inference_server_launcher
 
-docker build -t $IMAGE .
+docker build -t $IMAGE . && \
 docker push $IMAGE

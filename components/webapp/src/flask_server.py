@@ -23,19 +23,22 @@ from trtis_client import get_prediction, random_image
 
 app = Flask(__name__)
 
-name_arg = os.getenv('MODEL_SERVE_NAME', 'resnet_graphdef')
-addr_arg = os.getenv('TRTSERVER_HOST', '10.110.20.210')
-port_arg = os.getenv('TRTSERVER_PORT', '8001')
-model_version = os.getenv('MODEL_VERSION', '-1')
 
 # handle requests to the server
 @app.route("/")
 def main():
-  # name_arg = request.args.get("name", name_arg)
-  # addr_arg = request.args.get("addr", addr_arg)
-  # port_arg = request.args.get("port", port_arg)
-  # model_version = request.args.get("version", model_version)
-  args = {"name": name_arg, "addr": addr_arg, "port": port_arg, "version": str(model_version)}
+
+  name_arg = os.getenv('MODEL_SERVE_NAME', 'resnet_graphdef')
+  addr_arg = os.getenv('TRTSERVER_HOST', '10.110.20.210')
+  port_arg = os.getenv('TRTSERVER_PORT', '8001')
+  model_version = os.getenv('MODEL_VERSION', '-1')
+
+  name_arg = request.args.get("name", name_arg)
+  addr_arg = request.args.get("addr", addr_arg)
+  port_arg = request.args.get("port", port_arg)
+  model_version = request.args.get("version", model_version)
+  
+  args = {"name": str(name_arg), "addr": str(addr_arg), "port": str(port_arg), "version": str(model_version)}
   logging.info("Request args: %s", args)
 
   output = None
