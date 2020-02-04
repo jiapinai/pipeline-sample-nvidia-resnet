@@ -22,13 +22,13 @@
 # BASE_IMAGE=nvidia/cuda:10.1-devel-ubuntu18.04
 
 
-FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/tensorrt-inference-server-client-base
+FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:19.12-py3-clientsdk
 RUN apt-get update -y && \
     apt-get install -y --allow-unauthenticated wget vim && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache
 
-RUN pip3 install flask
+RUN hash -r pip3 && /usr/bin/env python3 -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple  && pip3 install flask -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 RUN mkdir /nvidia-reset-test_images \
  && curl -L -o images.tar.gz http://public.jiapinai.com/files_manager/1580132373388_kubeflow-nvidia-reset-test_images.tar.gz \

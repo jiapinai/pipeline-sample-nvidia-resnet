@@ -268,6 +268,7 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   request = grpc_service_pb2.StatusRequest(model_name=model_name)
   # Call and receive response from Status gRPC
   response = grpc_stub.Status(request)
+  print('response:', response)
   # Make sure the model matches our requirements, and get some
   # properties of the model that we need for preprocessing
   batch_size = 1
@@ -275,8 +276,10 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   input_name, output_name, c, h, w, format, dtype = parse_model(
     response, model_name, batch_size, verbose)
   logging.info("Got status for model %s:", model_name)
-  status_full = "input_name=%s, output_name=%s, c=%s, h=%s, w=%s, format=%s, dtype=%s " % model_name, input_name, output_name, c, h, w, format, dtype
+  print("Got status for model" +  model_name)
+  status_full = "input_name=%s, output_name=%s, c=%s, h=%s, w=%s, format=%s, dtype=%s " % (input_name, output_name, c, h, w, format, dtype)
   logging.info(status_full)
+  print(status_full)
 
 
   filledRequestGenerator = partial(requestGenerator, input_name, output_name, c, h, w, format, dtype, model_name,
@@ -301,6 +304,8 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   logging.info('responses size: %d', len(responses))
   for response in responses:
     print("Request {}, batch size {}".format(idx, batch_size))
+    print("result_filenames={}".format(result_filenames))
+    print("response.meta_data={}".format(response))
     label, score = postprocess(response.meta_data.output, result_filenames[idx], batch_size)
     idx += 1
 
