@@ -61,7 +61,7 @@ def main():
   except Exception as e:  # pylint: disable=broad-except
     logging.info("Exception occured: %s", e)
     # server connection failed
-    connection["text"] = "Exception making request: {0}".format(e)
+    connection["text"] = "Error: {}".format(str(e))
   # after 10 seconds, delete cached image file from server
   # t = Timer(10.0, remove_resource, [img_path])
   # t.start()

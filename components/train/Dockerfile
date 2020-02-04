@@ -13,7 +13,7 @@
 # limitations under the License.
 
 #FROM nvcr.io/nvidia/tensorflow:19.03-py3
-FROM registry.cn-hangzhou.aliyuncs.com/bostenai/tensorflow:19.04-py3
+FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:20.01-py3
 
 RUN pip install keras
 ADD src /workspace

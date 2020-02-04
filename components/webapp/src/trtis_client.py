@@ -299,13 +299,18 @@ def get_prediction(image_filename, server_host='localhost', server_port=8001,
   # For async, retrieve results according to the send order
   for request in requests:
     responses.append(request.result())
+  # print("responses={}".format(responses))
 
   idx = 0
   logging.info('responses size: %d', len(responses))
   for response in responses:
     print("Request {}, batch size {}".format(idx, batch_size))
     print("result_filenames={}".format(result_filenames))
-    print("response.meta_data={}".format(response))
+    print("response={}".format(response))
+    count=len(response.meta_data.output)
+    if count != 1:
+      err = "expected 1 result, got {}:{}".format(count, response.request_status.msg)
+      raise Exception(err)
     label, score = postprocess(response.meta_data.output, result_filenames[idx], batch_size)
     idx += 1
 

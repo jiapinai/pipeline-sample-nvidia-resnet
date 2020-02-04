@@ -22,7 +22,7 @@
 # BASE_IMAGE=nvidia/cuda:10.1-devel-ubuntu18.04
 
 
-FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:19.12-py3-clientsdk
+FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:20.01-py3-clientsdk
 RUN apt-get update -y && \
     apt-get install -y --allow-unauthenticated wget vim && \
     apt-get -y clean && \

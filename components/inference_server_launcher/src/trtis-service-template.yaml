@@ -47,7 +47,7 @@ spec:
         version: v1
     spec:
       containers:
-      - image: registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver
+      - image: registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:20.01-py3
         command: ["/bin/sh", "-c"]
         args: ["trtserver --model-store=MODEL_PATH"]
         imagePullPolicy: IfNotPresent

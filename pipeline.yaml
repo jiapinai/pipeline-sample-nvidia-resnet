@@ -68,7 +68,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-read-claim
+          nvidia-workspace-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -91,9 +91,9 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-read-claim
+        "claimName": nvidia-workspace-claim
       "name": |-
-        nvidia-workspace-read-claim
+        nvidia-workspace-claim
   - "container":
       "args":
       - |-
@@ -126,7 +126,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-read-claim
+          nvidia-workspace-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -143,9 +143,9 @@
       deploy-webapp
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-read-claim
+        "claimName": nvidia-workspace-claim
       "name": |-
-        nvidia-workspace-read-claim
+        nvidia-workspace-claim
   - "container":
       "args":
       - |-
@@ -162,7 +162,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-read-claim
+          nvidia-workspace-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -185,9 +185,9 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-read-claim
+        "claimName": nvidia-workspace-claim
       "name": |-
-        nvidia-workspace-read-claim
+        nvidia-workspace-claim
   - "dag":
       "tasks":
       - "arguments":
@@ -329,7 +329,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-read-claim
+          nvidia-workspace-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -358,6 +358,6 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-read-claim
+        "claimName": nvidia-workspace-claim
       "name": |-
-        nvidia-workspace-read-claim
+        nvidia-workspace-claim
