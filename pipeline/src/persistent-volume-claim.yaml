@@ -1,12 +1,15 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: nvidia-workspace-read-claim
+  name: resnet-test-retain-claim
   namespace: kubeflow
 spec:
-  storageClassName: local-path
   accessModes:
-          - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
-      storage: 20Gi
+      storage: 1Gi
+  selector: 
+    matchLabels:
+      name: resnet-test-retain
+  storageClassName: local-path

@@ -81,6 +81,8 @@ from keras.layers import BatchNormalization, Activation
 from keras.layers import AveragePooling2D, Input, Flatten
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras.callbacks import ReduceLROnPlateau
+from tensorflow.python.client import device_lib
+
 # https://github.com/keras-team/keras/issues/13347
 # from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -103,7 +105,12 @@ def main():
 
     args = parser.parse_args()
 
+    print('output_dir, model_name')
     print(args.output_dir, args.model_name)
+    # print('device_lib.list_local_devices', device_lib.list_local_devices())
+    #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+    #keras.backend.set_session(sess)
+    print('K.tensorflow_backend._get_available_gpus', K.tensorflow_backend._get_available_gpus())
 
     # Copy TRTIS resource (containing config.pbtxt, labels.txt, ...) from container to mounted volume
     model_dir = os.path.join(args.output_dir, args.model_name)
@@ -429,7 +436,7 @@ def main():
                   optimizer=Adam(lr=lr_schedule(0)),
                   metrics=['accuracy'])
     model.summary()
-    print(model_type)
+    print('model_type', model_type)
 
     # Prepare model model saving directory.
     save_dir = os.path.join(os.getcwd(), 'saved_models')
@@ -531,6 +538,7 @@ def main():
 
     keras_model_path = os.path.join(tmp_model_path, 'keras_model.h5')
     model.save(keras_model_path)
+    print('keras_model_path:', keras_model_path)
 
     # Convert Keras model to Tensorflow SavedModel
     def export_h5_to_pb(path_to_h5, export_path):
@@ -545,6 +553,7 @@ def main():
                                           outputs={"dense_1": keras_model.output})
         with K.get_session() as sess:
             # Save the meta graph and the variables
+            # https://www.tensorflow.org/tfx/serving/serving_basic
             builder.add_meta_graph_and_variables(sess=sess, tags=[tag_constants.SERVING],
                                                  signature_def_map={signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: signature})
         builder.save()
@@ -554,6 +563,9 @@ def main():
         shutil.rmtree(tf_model_path)
 
     export_h5_to_pb(keras_model_path, tf_model_path)
+    print('tf_model_path:', tf_model_path)
+    print('saved_model_dir:', tf_model_path)
+
 
     # Apply TF_TRT on the Tensorflow SavedModel
     graph = tf.Graph()
@@ -567,7 +579,7 @@ def main():
                 input_saved_model_tags=[tag_constants.SERVING],
                 max_batch_size=batch_size,
                 max_workspace_size_bytes=2 << 30,
-                precision_mode='fp16')
+                precision_mode='FP16')
 
             print([n.name + '=>' + n.op for n in trt_graph.node])
 
@@ -579,8 +591,8 @@ def main():
             )
 
     # Remove tmp dirs
-    shutil.rmtree(tmp_model_path)
-    shutil.rmtree(tf_model_path)
+    # shutil.rmtree(tmp_model_path)
+    # shutil.rmtree(tf_model_path)
 
     with open('/output.txt', 'w') as f:
         f.write(args.output_dir)

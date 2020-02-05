@@ -26,7 +26,7 @@
     - "name": |-
         epochs
       "value": |-
-        50
+        2
     - "name": |-
         trtserver_name
       "value": |-
@@ -68,7 +68,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-claim
+          resnet-test-retain-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -91,9 +91,9 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-claim
+        "claimName": resnet-test-retain-claim
       "name": |-
-        nvidia-workspace-claim
+        resnet-test-retain-claim
   - "container":
       "args":
       - |-
@@ -126,7 +126,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-claim
+          resnet-test-retain-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -143,9 +143,9 @@
       deploy-webapp
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-claim
+        "claimName": resnet-test-retain-claim
       "name": |-
-        nvidia-workspace-claim
+        resnet-test-retain-claim
   - "container":
       "args":
       - |-
@@ -162,7 +162,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-claim
+          resnet-test-retain-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -185,9 +185,9 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-claim
+        "claimName": resnet-test-retain-claim
       "name": |-
-        nvidia-workspace-claim
+        resnet-test-retain-claim
   - "dag":
       "tasks":
       - "arguments":
@@ -329,7 +329,7 @@
       - "mountPath": |-
           /mnt/workspace
         "name": |-
-          nvidia-workspace-claim
+          resnet-test-retain-claim
     "inputs":
       "parameters":
       - "name": |-
@@ -358,6 +358,6 @@
             /output.txt
     "volumes":
     - "persistentVolumeClaim":
-        "claimName": nvidia-workspace-claim
+        "claimName": resnet-test-retain-claim
       "name": |-
-        nvidia-workspace-claim
+        resnet-test-retain-claim

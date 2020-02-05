@@ -15,7 +15,7 @@
 #FROM nvcr.io/nvidia/tensorflow:19.03-py3
 FROM registry.cn-hangzhou.aliyuncs.com/kubeflow-ai/nvcr.io-nvidia-tensorrtserver:20.01-py3
 
-RUN pip install keras
+RUN pip3 install keras -i https://pypi.tuna.tsinghua.edu.cn/simple
 ADD src /workspace
 WORKDIR /workspace
 
@@ -31,4 +31,4 @@ RUN mkdir -p /root/.keras/datasets/ && \
     wget 'http://public.jiapinai.com/files_manager/1580182143647_kubeflow-nvidia-reset-cifar-10-python.tar.gz' -q -O /root/.keras/datasets/cifar-10-batches-py.tar.gz && \
     ls -alh /root/.keras/datasets/
 
-ENTRYPOINT ["python", "preprocess.py"]
+ENTRYPOINT ["python3", "preprocess.py"]

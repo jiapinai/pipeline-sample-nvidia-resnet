@@ -92,7 +92,7 @@ def resnet_pipeline(
     webapp_port=80
 ):
 
-    persistent_volume_name = 'nvidia-workspace'
+    persistent_volume_name = 'resnet-test-retain-claim'
     persistent_volume_path = '/mnt/workspace'
 
     op_dict = {}
